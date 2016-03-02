@@ -35,7 +35,7 @@ rmq.consume(consumeDone);
 ```javascript
 /*jslint node: true */
 "use strict";
-var rmq = require('./conn.js');
+var rmq = require('rabbitha');
 
 // This is an example of a RMQ publisher/producer
 
