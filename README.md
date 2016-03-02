@@ -7,7 +7,7 @@ The goal of this project is to create a thin and robust wrapper around amqplib s
 Currently the interface abstracts a consumer and producer API for a topic exchange. Other types of exchanges or exchange-free queue access are not supported. 
 ## Features
 This wrapper gracefully handles RabbitMQ service restarting (it should not crash).
-# Known Issues
+## Known Issues
 Currently there are a few issues around handling clustering and load balancing, these are being worked on.
 ## Usage
 You need to have a named queue and a routing key for the consumer. You only need to have a routing key for the producer . 
