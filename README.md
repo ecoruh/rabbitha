@@ -1,17 +1,17 @@
 # rabbitha
 A highly available RabbitMQ wrapper.
 
-# The goal
+## The goal
 The goal of this project is to create a thin and robust wrapper around amqplib so that RabbitMQ clients do not crash during service disruptions. Secondly they seemlessly work in a round robbin RabbitMQ cluster.
-# Constraints
+## Constraints
 Currently the interface abstracts a consumer and producer API for a topic exchange. Other types of exchanges or exchange-free queue access are not supported. 
-# Features
+## Features
 This wrapper gracefully handles RabbitMQ service restarting (it should not crash).
 # Known Issues
 Currently there are a few issues around handling clustering and load balancing, these are being worked on.
-# Usage
+## Usage
 You need to have a named queue and a routing key for the consumer. You only need to have a routing key for the producer . 
-## Consumer
+### Consumer
 ```javascript
 /*jslint node: true */
 "use strict";
@@ -31,7 +31,7 @@ var consumeDone = function(err, message) {
 };
 rmq.consume(consumeDone);
 ```
-## Producer
+### Producer
 ```javascript
 /*jslint node: true */
 "use strict";
