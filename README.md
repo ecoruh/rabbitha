@@ -8,7 +8,8 @@ Currently the interface abstracts a consumer and producer API for a topic exchan
 ## Features
 This wrapper gracefully handles RabbitMQ service restarting (it should not crash).
 ## Known Issues
-Currently there are a few issues around handling clustering and load balancing, these are being worked on.
+- Currently there are a few issues around handling clustering and load balancing, these are being worked on.
+- If config objects used are not initialised this may cause ill behaviour or crash. This will be improved in the near future.  
 ## Usage
 You need to have a named queue and a routing key for the consumer. You only need to have a routing key for the producer . 
 ### Consumer
@@ -51,4 +52,24 @@ var publishDone = function(err){
   }
 }
 rmq.publish( 'transformed data', publishDone);
+```
+### Configuration
+The configuration object is directly accessible from clients. Some of the object members are initialised via environment variables. This is to ensure your project's private information such as credentials are not disclosed.
+```javascript
+config = {
+  url: process.env.AMQP_URL,            // eg. 'amqp://rabbituser:rabbitpassword@rabbit1'
+  exchange: process.env.AMQP_EXCHANGE,  // eg. 'myExchange'
+  inputQueue: {
+    name: process.env.AMQP_INPUT_QUEUE, // eg. 'myQueue'
+    routingKey: process.env.AMQP_INPUT_ROUTING_KEY  // eg. 'my.topic'
+  },
+  outputQueue: {
+    routingKey: process.env.AMQP_OUTPUT_ROUTING_KEY // eg. 'my.topic'
+  },
+  /* These are the options forwarded to amqp connection */
+  opts: {
+    heartbeat:5
+  },
+  exitOnPublish: false
+};
 ```
