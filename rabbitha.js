@@ -29,6 +29,16 @@ exports.config = {
 // Internal short-hand
 var _config = exports.config;
 
+function restartOnError(err, cb) {
+  console.log("** Error: %s, will restart in 3s", err);
+  setTimeout( function(){
+   dom.run(() => {
+    consume(cb);
+   });
+  }, 3000);
+  cb(err, null);
+}
+
 /*
   A consumer designed to work with a topic exchange.
   You must always use a named input queue bound to your service,
@@ -38,25 +48,20 @@ var _config = exports.config;
 function consume(cb) {
   amqp.connect(String(_config.url), _config.opts, function(err, conn) {
     if (err) {
-      setTimeout( function(){
-       dom.run(() => {
-        consume(cb);
-       });
-      }, 3000);
+      restartOnError(err, cb);
       return;
     } else {
       conn.createChannel(function(err, ch) {
         if (err) {
-          setTimeout( function(){
-           dom.run(() => {
-            consume(cb);
-           }); 
-          }, 3000);
-          cb(err, null);
+          restartOnError(err, cb);
           return;
         }
         ch.assertExchange(_config.exchange, 'topic', {durable: true});
         ch.assertQueue(_config.inputQueue.name, {durable: true}, function(err, q){
+          if (err) {
+            restartOnError(err, cb);
+            return;
+          }
           console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
           ch.bindQueue(q.queue, _config.exchange, _config.inputQueue.routingKey);
           ch.consume(q.queue, function(msg) {
