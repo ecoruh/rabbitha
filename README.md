@@ -9,9 +9,10 @@ Currently the interface abstracts a consumer and producer API for a topic exchan
 This wrapper gracefully handles RabbitMQ service restarting (it should not crash).
 ## Known Issues
 - Currently there are a few issues around handling clustering and load balancing, these are being worked on.
-- If config objects used are not initialised this may cause ill behaviour or crash. This will be improved in the near future.  
+- If config objects used are not initialised this may cause ill behaviour or crash. This will be improved in the near future.
+
 ## Usage
-You need to have a named queue and a routing key for the consumer. You only need to have a routing key for the producer . 
+You need to have a named queue and a routing key for the consumer. You only need to have a routing key for the producer.
 ### Consumer
 ```javascript
 /*jslint node: true */
