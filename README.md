@@ -8,7 +8,6 @@ Currently the interface abstracts a consumer and producer API for a topic exchan
 ## Features
 This wrapper gracefully handles RabbitMQ service restarting (it should not crash).
 ## Known Issues
-- Currently there are a few issues around handling clustering and load balancing, these are being worked on.
 - If config objects used are not initialised this may cause ill behaviour or crash. This will be improved in the near future.
 
 ## Usage
