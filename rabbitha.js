@@ -3,7 +3,7 @@
 
 var amqp = require('amqplib/callback_api');
 var dom = require('domain').create();
-var exports = module.exports = {};
+var exports = module.exports;
 var consumeHandler;
 
 /* 
@@ -26,16 +26,21 @@ exports.config = {
   exitOnPublish: false
 };
 
-// Internal short-hand
-var _config = exports.config;
+var _config = exports.config,
+  RESTART_TIMEOUT_MS = 3000;
 
+/*
+  When consumer receives a severe exception such as a connection drop out, 
+  it needs to be dealt with. Simpy restart the it within the context
+  of a domain after a graceful timeout.
+*/
 function restartOnError(err, cb) {
-  console.log("** Error: %s, will restart in 3s", err);
+  console.log("** Error: %s, consumer will restart shortly", err);
   setTimeout( function(){
    dom.run(() => {
     consume(cb);
    });
-  }, 3000);
+  }, RESTART_TIMEOUT_MS);
   cb(err, null);
 }
 
@@ -54,19 +59,22 @@ function consume(cb) {
       conn.createChannel(function(err, ch) {
         if (err) {
           restartOnError(err, cb);
+          conn.close();
           return;
         }
         ch.assertExchange(_config.exchange, 'topic', {durable: true});
         ch.assertQueue(_config.inputQueue.name, {durable: true}, function(err, q){
           if (err) {
             restartOnError(err, cb);
+            ch.close();
+            conn.close();
             return;
           }
           console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", q.queue);
           ch.bindQueue(q.queue, _config.exchange, _config.inputQueue.routingKey);
           ch.consume(q.queue, function(msg) {
             cb(null, msg);
-          }, {noAck: false});
+          }, {noAck: true});
         });
       });
     }
@@ -82,7 +90,7 @@ dom.on('error', (er) => {
    dom.run(() => {
     consume(consumeHandler);
    }); 
-  }, 3000);
+  }, RESTART_TIMEOUT_MS);
 });
 
 /*
