@@ -1,5 +1,5 @@
 # rabbitha
-A highly available RabbitMQ wrapper.
+A highly available RabbitMQ client wrapper.
 
 ## The goal
 The goal of this project is to create a thin and robust wrapper around amqplib so that RabbitMQ clients do not crash during service disruptions. Secondly they seemlessly work in a round robbin RabbitMQ cluster.
@@ -46,7 +46,7 @@ rmq.config.exitOnPublish = true;                // default: false
 
 var publishDone = function(err){
   if (err) {
-    console.log('** Error: ' + error);
+    console.log('** Error: ' + err);
   } else {
     console.log('** Publish done!')   
   }
